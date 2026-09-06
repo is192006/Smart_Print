@@ -1,45 +1,109 @@
-# UCS503P Project Template
+# 🖨️ SmartPrint
 
-This is a project template for UCS503P Project (2026-27
-ODD). 
+> A smart, queue-based printing management system designed to make college printing faster, easier, and more efficient.
 
-There are 3 reports in LaTeX format, namely *a*)
-Project Proposal, *b*) Project Report Prototype Stage,
-and *c*) Project Report Final -- each in their
-respective folders.
+## 📌 Overview
 
-Journals are stacked under the folder `journals`, one
-folder for each team member.  A sample entry has been
-made for example.
+**SmartPrint** is a digital printing management system designed for college students and printing shops.
 
-The source code is contained within the folder `code`.
+Traditional college printing often requires students to physically visit the printing shop, wait in long queues, submit documents, and wait for their prints. SmartPrint aims to reduce this waiting time by allowing students to submit print requests digitally and track their requests through a token-based queue system.
 
-The documentation is under folder `docs`.
+The system is designed around **remote print submission, queue management, priority handling, document validation, and token generation**.
 
-All other aspects of code organisation are left to the
-discretion of the user(s).
+---
 
+## 🎯 Problem Statement
 
-## Docs
+College printing shops often face:
 
-As of now, the `docs` is just an organised collection
-of markdown (`md`) files.  But the build procedure is
-using [`mkdocs`](https://google.com/search?q=mkdocs)
-backend.  As a result, any commit into the `master`
-branch of github repository would result in CI/CD based
-build and deployment of the documentation including the
-journals.
+- Long queues during peak hours
+- Students waiting unnecessarily at the printing shop
+- Manual handling of print requests
+- Difficulty managing multiple print requests
+- No effective priority mechanism
+- Increased workload for printing-shop staff
+- Lack of visibility into the status of a print request
 
-For a local DEV-version of the docs for viewing and
-testing, install the local env and issue the following
-command:
+Students also have to spend considerable time waiting for their documents to be printed.
 
-``` shell
-make docs
-```
+### 💡 Our Solution
 
-### Local `env` for `docs`
+SmartPrint provides a centralized platform where students can:
 
-``` shell
+1. Upload their documents remotely.
+2. Provide printing requirements.
+3. Receive a token for their request.
+4. Track their position/status in the queue.
+5. Visit the printing shop when their document is ready.
 
-```
+This reduces unnecessary waiting and improves the overall efficiency of the printing process.
+
+---
+
+## ✨ Key Features
+
+### 👨‍🎓 Student Features
+
+- 🔐 College email-based authorization
+- 📄 Upload documents for printing
+- 🖨️ Specify printing requirements
+- 🎫 Generate a unique print token
+- 📊 Track print request status
+- ⏱️ Reduce physical waiting time
+- 📋 View submitted print requests
+
+### 🏪 Printing Shop Features
+
+- 📥 View incoming print requests
+- 📋 Manage the printing queue
+- 🔄 Update request status
+- ⚡ Handle priority requests
+- 🖨️ Process documents efficiently
+- 📊 Manage active and completed requests
+
+### ⚙️ Queue Management
+
+SmartPrint supports intelligent queue management instead of relying only on simple FIFO ordering.
+
+The system can consider factors such as:
+
+- Request priority
+- Submission time
+- Printing requirements
+- Queue position
+
+This allows urgent requests to be handled more efficiently while maintaining fairness in the queue.
+
+---
+
+## 🔄 System Workflow
+
+```text
+Student
+   │
+   ▼
+Login / Authorization
+   │
+   ▼
+Upload Document
+   │
+   ▼
+Enter Printing Details
+   │
+   ▼
+Submit Print Request
+   │
+   ▼
+Request Added to Queue
+   │
+   ▼
+Token Generated
+   │
+   ▼
+Printing Shop Processes Request
+   │
+   ▼
+Request Status Updated
+   │
+   ▼
+Student Collects Printed Document
