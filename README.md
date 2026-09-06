@@ -1,45 +1,109 @@
-# UCS503P Project Template
+# SmartPrint 🖨️
 
-This is a project template for UCS503P Project (2026-27
-ODD). 
+SmartPrint is a smart college printing management system designed to eliminate long queues at campus printing shops.
 
-There are 3 reports in LaTeX format, namely *a*)
-Project Proposal, *b*) Project Report Prototype Stage,
-and *c*) Project Report Final -- each in their
-respective folders.
+Instead of waiting physically at the printing counter, students can upload their documents online, select printing requirements, make a payment, and receive a token. The printing staff can process orders through a priority-based queue system, allowing students to collect their documents when they are ready.
 
-Journals are stacked under the folder `journals`, one
-folder for each team member.  A sample entry has been
-made for example.
+---
 
-The source code is contained within the folder `code`.
+## 🚀 Problem Statement
 
-The documentation is under folder `docs`.
+Traditional college printing shops often suffer from:
 
-All other aspects of code organisation are left to the
-discretion of the user(s).
+- Long queues during peak hours
+- Students waiting physically for their documents
+- Inefficient FIFO-based order management
+- Difficulty handling urgent printing requests
+- Manual order and payment management
+- Lack of visibility into order status
 
+SmartPrint aims to solve these problems through an online and intelligent printing workflow.
 
-## Docs
+---
 
-As of now, the `docs` is just an organised collection
-of markdown (`md`) files.  But the build procedure is
-using [`mkdocs`](https://google.com/search?q=mkdocs)
-backend.  As a result, any commit into the `master`
-branch of github repository would result in CI/CD based
-build and deployment of the documentation including the
-journals.
+## 💡 Solution
 
-For a local DEV-version of the docs for viewing and
-testing, install the local env and issue the following
-command:
+SmartPrint provides a centralized platform where students can:
 
-``` shell
-make docs
-```
+1. Log in using their authorized college email.
+2. Upload documents for printing.
+3. Select printing requirements.
+4. View the estimated printing cost.
+5. Make an online payment.
+6. Receive a printing token.
+7. Track the status of their order.
+8. Collect their documents once they are ready.
 
-### Local `env` for `docs`
+The printing shop receives all orders through a centralized dashboard and can process them using a priority-based queue.
 
-``` shell
+---
 
-```
+## ✨ Key Features
+
+### 👩‍🎓 Student Features
+
+- College email-based authentication
+- Online document upload
+- PDF/document validation
+- Print configuration
+- Automatic cost calculation
+- Online payment
+- Token generation
+- Order status tracking
+- Order history
+
+### 🖨️ Printing Shop Features
+
+- Centralized order dashboard
+- Queue management
+- Priority-based scheduling
+- FIFO scheduling for normal orders
+- Priority handling for urgent orders
+- Order status updates
+- Print job management
+
+### ⚡ Smart Queue Management
+
+Instead of relying only on First-In-First-Out (FIFO), SmartPrint supports dynamic priority scheduling.
+
+Orders can be prioritized based on factors such as:
+
+- Urgency
+- Waiting time
+- Number of pages
+- Order type
+- Current queue conditions
+
+This helps reduce unnecessary waiting and improves printing-shop efficiency.
+
+---
+
+## 🏗️ System Architecture
+
+```text
+Student
+   │
+   ▼
+SmartPrint Web Application
+   │
+   ├── Authentication
+   │
+   ├── Document Upload
+   │
+   ├── Order Management
+   │
+   ├── Payment
+   │
+   └── Token Generation
+            │
+            ▼
+      Queue Management
+            │
+            ├── FIFO Queue
+            └── Priority Queue
+            │
+            ▼
+      Printing Shop
+            │
+            ▼
+       Order Completed
