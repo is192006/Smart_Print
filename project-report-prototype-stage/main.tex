@@ -1,0 +1,518 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------------------------------------------------------------
+% Packages
+% ---------------------------------------------------------------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{mathptmx}                 % Times-like font
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\usepackage{titling}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{parskip}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{tocloft}
+
+\onehalfspacing
+\setlength{\parskip}{0.5em}
+
+% ---------------------------------------------------------------
+% Table of Contents formatting: bold chapters, clearer subsection
+% hierarchy with progressive indentation.
+% ---------------------------------------------------------------
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\renewcommand{\cftsecfont}{\bfseries\normalsize}
+\renewcommand{\cftsecpagefont}{\bfseries}
+\renewcommand{\cftsubsecfont}{\normalfont\itshape}
+\setlength{\cftbeforechapskip}{0.8em}
+\setlength{\cftsecindent}{1.5em}
+\setlength{\cftsubsecindent}{3.2em}
+\setlength{\cftsecnumwidth}{2.8em}
+\setlength{\cftsubsecnumwidth}{3.4em}
+
+% ---------------------------------------------------------------
+% Header / Footer
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[R]{\small UCS503 -- Software Engineering Lab}
+\fancyfoot[C]{\thepage}
+
+% ---------------------------------------------------------------
+% Diagram placeholder helper
+% ---------------------------------------------------------------
+\newcommand{\DiagramPlaceholder}[3]{%
+  \begin{figure}[H]
+    \centering
+    \fbox{%
+      \begin{minipage}[c][#1][c]{0.92\linewidth}
+        \centering\itshape\color{gray} #2
+      \end{minipage}%
+    }
+    \caption{#3}
+  \end{figure}%
+}
+
+% ---------------------------------------------------------------
+% Title page data
+% ---------------------------------------------------------------
+\title{\textbf{SmartPrint: Smart College Printing Management System}}
+\date{\today}
+
+\begin{document}
+
+% =================================================================
+% COVER PAGE
+% =================================================================
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+  {\small\bfseries UCS503 -- Software Engineering Lab}\\[2cm]
+
+  {\LARGE\bfseries SmartPrint}\\[0.3cm]
+  {\Large Smart College Printing Management System}\\[1.2cm]
+
+  {\large UCS 503 Software Engineering Project Report}\\[0.3cm]
+  {\large\bfseries Mid-Semester Evaluation}\\[2cm]
+
+  {\bfseries Submitted by:}\\[0.5cm]
+  1024030848 \quad Harbani Kaur\\[0.2cm]
+  1024030866 \quad Ina Sharma\\[1cm]
+
+  Group: 3C62\\
+  BE Third Year, Computer Engineering\\[1.5cm]
+
+  {\bfseries Submitted to:}\\[0.3cm]
+  Dr. Raghav B. Venkataramaiyer\\[2cm]
+
+  \vfill
+  {\bfseries Computer Science and Engineering Department}\\
+  Thapar Institute of Engineering and Technology, Patiala
+\end{titlepage}
+
+% =================================================================
+% TABLE OF CONTENTS
+% =================================================================
+\tableofcontents
+\clearpage
+
+% =================================================================
+% CHAPTER 1: PROJECT SELECTION PHASE
+% =================================================================
+\chapter{Project Selection Phase}
+
+\section{Software Bid}
+
+\subsection*{Problem Being Addressed}
+College printing shops on campus are operated as a walk-in, paper-driven service. A student or faculty member must carry a document (typically on a USB drive or by emailing it to the shop's system), physically wait at the counter while the shop staff opens, formats, and prints it, and pay in cash on collection. During peak hours -- before assignment deadlines or exams -- this produces long physical queues, no visibility into how many jobs are ahead of a given request, and no record of what was printed, when, or at what price. Shop staff have no digital worklist and must track pending jobs manually.
+
+\subsection*{Proposed Solution}
+SmartPrint is a web-based printing-management platform that lets Students and Faculty upload a document, choose print settings (paper size, colour mode, sides, copies, page range, and an optional finishing option such as spiral binding), and place an order against a specific print shop. The shop's price is resolved automatically from that shop's active pricing rules at the moment of ordering. Payment is completed online (through a payment abstraction that can later be connected to a real gateway), after which the order is placed into that shop's first-in-first-out printing queue. Shop Staff work from a queue dashboard that shows exactly which order to print next, and Admin users oversee shops, staff, and pricing across the institution.
+
+\subsection*{Project Objectives}
+\begin{itemize}[leftmargin=0.7cm]
+  \item Remove the need for a student/faculty member to be physically present while a document is queued for printing.
+  \item Give every party (student, staff, admin) a live, structured view of order status instead of an informal physical line.
+  \item Make per-page and per-finishing pricing transparent and centrally configurable per shop.
+  \item Support the free-printing entitlement that CSE faculty already have at the departmental printer, enforced in software rather than trusted to memory.
+  \item Provide a clean cancellation/refund path so a student is not charged for an order the shop never started printing.
+\end{itemize}
+
+\subsection*{Target Users}
+Four roles exist in the system: \textbf{Student} (self-registers, pays for printing), \textbf{Faculty} (provisioned by an Admin, can print for free at the CSE department printer), \textbf{Shop Staff} (provisioned by an Admin and assigned to exactly one print shop, operates that shop's queue and pricing), and \textbf{Admin} (manages shops, staff, faculty accounts, and can view every order).
+
+\subsection*{Major Functionality}
+Document upload and validation; shop and pricing/finishing-rule browsing; order placement with server-computed pricing; online payment initiation and confirmation; a FIFO print queue per shop; order cancellation and refund requests; queue processing (start-next, mark-ready, collect) by shop staff; and administrative management of shops, staff/faculty accounts, and pricing.
+
+\subsection*{Expected Benefits}
+Reduced physical waiting time for students and faculty, a clear audit trail of every order (status history, payments, refunds), fairer queue handling because slot order is determined by system timestamp rather than who can shout loudest at the counter, and centralised, auditable pricing instead of ad-hoc cash pricing at each shop.
+
+\subsection*{Scope and Constraints}
+The current implementation targets a single institution with multiple independently operated print shops. Payment is processed through a mock/simulated payment provider suitable for a development and evaluation environment (module boundaries are written so a real gateway can be substituted later). Only PDF and common office/image document types are supported for upload. Queue ordering is strictly first-in-first-out by the time an order is confirmed for printing; no priority-weighting scheme is implemented in the current codebase.
+
+\section{Project Overview}
+
+\subsection*{Existing Printing Problem}
+The manual, walk-in printing workflow described above scales poorly with the volume of requests around deadlines, gives students no way to plan their visit around queue length, and leaves shop staff without any structured way to track outstanding work across multiple concurrent orders.
+
+\subsection*{Motivation}
+A digital, queue-based system converts an unmanaged physical line into an ordered, trackable pipeline: submission, payment, queueing, printing, and collection each become an explicit, timestamped state transition that both the customer and the shop can see.
+
+\subsection*{Proposed SmartPrint Solution}
+SmartPrint is implemented as a two-tier web application: a React/TypeScript single-page frontend and a Node.js/Express/TypeScript REST API backend, backed by a PostgreSQL database accessed through the Prisma ORM. Authentication uses JSON Web Tokens issued on login, with role-based route guards enforced on both the frontend (route-level redirects) and backend (middleware-level authorization checks on every protected endpoint).
+
+\subsection*{System Workflow}
+A Student or Faculty user registers/logs in, uploads a document, selects a shop and print options, and places an order. The backend resolves the correct price from that shop's currently effective pricing and finishing rules (never trusting a client-supplied price) and creates the order in a \texttt{PLACED} state. If payment is required, the user initiates and confirms payment; on a successful confirmation the order becomes \texttt{PAYMENT\_CONFIRMED} and is atomically inserted into that shop's FIFO queue as \texttt{QUEUED}. Faculty ordering at the dedicated CSE faculty shop skip payment entirely -- their order total is computed as zero and they are queued immediately. Shop Staff start the next waiting order (moving it to \texttt{PRINTING}), mark it complete (\texttt{READY}), and mark it collected (\texttt{COLLECTED}) once the customer has picked it up. A student/faculty user may cancel an order any time before printing has started, and may request a refund once a paid order has been cancelled; an Admin settles that refund request.
+
+\subsection*{Major Modules}
+\begin{itemize}[leftmargin=0.7cm]
+  \item \textbf{Identity \& Access} -- registration, login, JWT issuance, password reset, role-based authorization.
+  \item \textbf{Document Management} -- upload, storage, metadata (file type, size, page count), listing, viewing/downloading, and deletion.
+  \item \textbf{Shop \& Pricing} -- shop directory, per-shop pricing rules (print type / paper size / sides), and per-shop finishing rules, each with an effective-date window.
+  \item \textbf{Order Management} -- order creation with server-resolved pricing, cancellation, and order-status history.
+  \item \textbf{Payments \& Refunds} -- payment initiation/confirmation against a mock payment provider, and refund request/processing tied to cancelled, paid orders.
+  \item \textbf{Print Queue} -- a strict FIFO queue per shop, with start-next / mark-ready / collect operations for Shop Staff and Admin.
+  \item \textbf{Administration} -- shop creation/updates, Shop Staff and Faculty account provisioning and shop assignment, and system-wide order visibility.
+\end{itemize}
+
+\subsection*{Users / Roles}
+Student, Faculty, Shop Staff, Admin -- exactly the four roles defined in the system's \texttt{UserRole} enumeration, each gated by dedicated backend authorization middleware and dedicated frontend routes.
+
+\subsection*{Technology / Architecture}
+\textbf{Frontend:} React 19 with TypeScript, Vite, and React Router. \textbf{Backend:} Node.js with Express and TypeScript, organised into route/controller/service layers. \textbf{Database:} PostgreSQL, managed through Prisma ORM migrations. \textbf{Auth:} JSON Web Tokens with bcrypt-hashed passwords. \textbf{File handling:} Multer for uploads, with per-type document processors (PDF, Word, Excel, PowerPoint, image formats) used to extract page counts where possible. \textbf{Testing:} Jest for backend integration tests, Vitest for frontend unit tests. \textbf{Deployment:} Dockerfiles are provided for both the frontend and backend services.
+
+\subsection*{Expected Outcome}
+A working, role-correct printing-management platform in which every order's lifecycle -- placement, pricing, payment, queueing, printing, collection, or cancellation/refund -- is fully traceable, and in which shop staff and administrators operate from live, structured views rather than an informal physical queue.
+
+% =================================================================
+% CHAPTER 2: ANALYSIS PHASE
+% =================================================================
+\chapter{Analysis Phase}
+
+\section{Use Cases}
+
+\subsection{Use-Case Diagrams}
+
+The use-case diagram identifies the four actors implemented in SmartPrint -- Student, Faculty, Shop Staff, and Admin -- and the principal use cases each performs. Student and Faculty share the customer-facing ordering workflow (modelled through a generalisation relationship, since both roles place, track, and cancel orders under the same rules); Shop Staff operate the print queue and manage their own shop's pricing; Admin has system-wide management responsibility over shops, staff, pricing, and refunds.
+
+\DiagramPlaceholder{6.5cm}{[SPACE FOR USE CASE DIAGRAM]}{Use-Case Diagram of SmartPrint}
+
+\subsection{Use Case Templates}
+
+Detailed templates for the principal use cases follow, in actor / pre-condition / main-flow / alternate-flow / post-condition format, reflecting the actual authorization rules and state transitions implemented in the backend.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{|p{3.3cm}|p{10.7cm}|}
+\hline
+\textbf{Use Case ID / Name} & UC-01 / Login \\ \hline
+\textbf{Actor(s)} & Student, Faculty, Shop Staff, Admin \\ \hline
+\textbf{Description} & A registered user authenticates with an email and password and receives a signed JSON Web Token used for all subsequent requests. \\ \hline
+\textbf{Pre-conditions} & The user holds an account with status \texttt{ACTIVE}. \\ \hline
+\textbf{Main Flow} & 1. User submits email and password.\newline 2. System verifies the password hash.\newline 3. System issues a JWT encoding the user's id and role.\newline 4. Frontend redirects the user to the role-appropriate dashboard. \\ \hline
+\textbf{Alternate / Exception Flow} & Invalid credentials or an \texttt{INACTIVE} account result in an authentication error and no token is issued. \\ \hline
+\textbf{Post-conditions} & The user holds a valid session token scoped to their role. \\ \hline
+\textbf{Includes / Extends} & Included by every subsequent authenticated use case. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-02 / Upload Document \\ \hline
+\textbf{Actor(s)} & Student, Faculty \\ \hline
+\textbf{Description} & An authenticated user uploads a document that will later be attached to a print order. \\ \hline
+\textbf{Pre-conditions} & User is logged in. \\ \hline
+\textbf{Main Flow} & 1. User selects a file (PDF, Word, Excel, PowerPoint, or image).\newline 2. System validates file type and size.\newline 3. System stores the file and records file name, type, size, and a content hash.\newline 4. System attempts to extract a page count for the document. \\ \hline
+\textbf{Alternate / Exception Flow} & An unsupported file type or an oversized file is rejected with a validation error before storage. \\ \hline
+\textbf{Post-conditions} & The document is available to the user's account for use in a print order. \\ \hline
+\textbf{Includes / Extends} & Included by UC-03 (Place Print Order). \\ \hline
+
+\textbf{Use Case ID / Name} & UC-03 / Place Print Order \\ \hline
+\textbf{Actor(s)} & Student, Faculty \\ \hline
+\textbf{Description} & The user selects a shop, one or more uploaded documents, and print settings (paper size, sides, colour mode, copies, page range, optional finishing) to create an order. \\ \hline
+\textbf{Pre-conditions} & The user is logged in; the target shop exists and is currently accepting orders; the user's role is eligible for that shop. \\ \hline
+\textbf{Main Flow} & 1. User selects a shop and one or more documents with print settings.\newline 2. System resolves the applicable pricing and finishing rule for each item from the shop's currently effective rules.\newline 3. System computes each item's line total and the order total.\newline 4. System creates the order in status \texttt{PLACED} together with its line items. \\ \hline
+\textbf{Alternate / Exception Flow} & If the shop is not accepting orders, or the role is not eligible for that shop, the order is rejected before creation. \\ \hline
+\textbf{Post-conditions} & An order exists in status \texttt{PLACED}, awaiting payment (or, for a free faculty order, awaiting queueing). \\ \hline
+\textbf{Includes / Extends} & Includes UC-02 (Upload Document); includes UC-04 (Make Payment) except for a free faculty order, which extends this use case by skipping payment. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-04 / Make Payment \\ \hline
+\textbf{Actor(s)} & Student, Faculty (for a non-free order) \\ \hline
+\textbf{Description} & The user pays the order's total amount through the system's payment abstraction before the order can enter the print queue. \\ \hline
+\textbf{Pre-conditions} & The order exists and is in a payable status (\texttt{PLACED} or \texttt{PAYMENT\_CONFIRMED} without a settled payment); no other payment is already pending for this order. \\ \hline
+\textbf{Main Flow} & 1. User selects a payment method (UPI, Card, Wallet, or Cash) and initiates payment.\newline 2. System creates a \texttt{PENDING} payment record against the order's total amount.\newline 3. User confirms the payment.\newline 4. On a successful outcome, system marks the payment \texttt{SUCCESS}, sets the order to \texttt{PAYMENT\_CONFIRMED}, and atomically enqueues the order (UC-06). \\ \hline
+\textbf{Alternate / Exception Flow} & On a failed outcome, the payment is marked \texttt{FAILED} and the order remains payable so the user may retry. A payment can never be confirmed twice, and cannot succeed against an order that has since been cancelled. \\ \hline
+\textbf{Post-conditions} & The order is either queued for printing (payment succeeded) or still awaiting a successful payment. \\ \hline
+\textbf{Includes / Extends} & Included by UC-03; includes UC-06 (queueing) on success. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-05 / Track Order \\ \hline
+\textbf{Actor(s)} & Student, Faculty \\ \hline
+\textbf{Description} & The user views the current status and full status history of their order. \\ \hline
+\textbf{Pre-conditions} & The order belongs to the requesting user. \\ \hline
+\textbf{Main Flow} & 1. User opens the order detail view.\newline 2. System returns the order's current status and its recorded status-history entries (placed, payment confirmed, queued, printing, ready, collected, or cancelled). \\ \hline
+\textbf{Alternate / Exception Flow} & None. \\ \hline
+\textbf{Post-conditions} & User has visibility into the order's progress. \\ \hline
+\textbf{Includes / Extends} & None. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-06 / Manage Print Queue \\ \hline
+\textbf{Actor(s)} & Shop Staff, Admin \\ \hline
+\textbf{Description} & An order that has been paid (or is a free faculty order) enters its shop's first-in-first-out queue; Shop Staff (or Admin) advance the queue by starting the next waiting order and marking it ready once printed. \\ \hline
+\textbf{Pre-conditions} & The Shop Staff member is active and assigned to the shop in question (Admin may act on any shop). \\ \hline
+\textbf{Main Flow} & 1. System inserts a successfully paid/free order into the shop's queue, ordered by entry time.\newline 2. Staff starts the next waiting entry; the order moves to \texttt{PRINTING} (only one order may print per shop at a time).\newline 3. Staff marks the entry complete; the order moves to \texttt{READY} for collection. \\ \hline
+\textbf{Alternate / Exception Flow} & Starting the next order fails if another order at that shop is already printing, or if no order is waiting. \\ \hline
+\textbf{Post-conditions} & The queue entry and its order's status accurately reflect the shop's real printing progress. \\ \hline
+\textbf{Includes / Extends} & Included automatically by UC-04 on payment success (or directly by UC-03 for a free faculty order). \\ \hline
+
+\textbf{Use Case ID / Name} & UC-07 / Cancel Order \\ \hline
+\textbf{Actor(s)} & Student, Faculty \\ \hline
+\textbf{Description} & The user cancels their own order before it has started printing. \\ \hline
+\textbf{Pre-conditions} & The order belongs to the user and is in status \texttt{PLACED}, \texttt{PAYMENT\_CONFIRMED}, or \texttt{QUEUED}. \\ \hline
+\textbf{Main Flow} & 1. User requests cancellation, optionally with a reason.\newline 2. System sets the order to \texttt{CANCELLED} and removes its entry from the print queue, if any. \\ \hline
+\textbf{Alternate / Exception Flow} & An order that is already \texttt{PRINTING}, \texttt{READY}, \texttt{COLLECTED}, or \texttt{CANCELLED} cannot be cancelled. \\ \hline
+\textbf{Post-conditions} & The order is cancelled and will not be printed. \\ \hline
+\textbf{Includes / Extends} & Extended by UC-08 (Request Refund) when the cancelled order had a successful payment. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-08 / Request Refund \\ \hline
+\textbf{Actor(s)} & Student, Faculty \\ \hline
+\textbf{Description} & The user requests a refund of the full amount paid on an order that has since been cancelled. \\ \hline
+\textbf{Pre-conditions} & The order is in status \texttt{CANCELLED} and has a successful payment. \\ \hline
+\textbf{Main Flow} & 1. User submits a refund request with a reason.\newline 2. System creates a refund record in status \texttt{REQUESTED} for the full paid amount. \\ \hline
+\textbf{Alternate / Exception Flow} & A refund cannot be requested for an order that has not been cancelled, or that has no successful payment. \\ \hline
+\textbf{Post-conditions} & A pending refund request exists for Admin to process. \\ \hline
+\textbf{Includes / Extends} & Extends UC-07. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-09 / Process Refund \\ \hline
+\textbf{Actor(s)} & Admin \\ \hline
+\textbf{Description} & An Admin settles a requested refund. \\ \hline
+\textbf{Pre-conditions} & A refund request exists in status \texttt{REQUESTED}. \\ \hline
+\textbf{Main Flow} & 1. Admin reviews the refund request.\newline 2. Admin processes it against the payment provider.\newline 3. System marks the refund \texttt{PROCESSED} (or \texttt{FAILED} on a provider failure). \\ \hline
+\textbf{Alternate / Exception Flow} & A provider failure marks the refund \texttt{FAILED} for follow-up rather than silently succeeding. \\ \hline
+\textbf{Post-conditions} & The refund's outcome is recorded against the payment. \\ \hline
+\textbf{Includes / Extends} & Included by UC-08. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-10 / Manage Shop Pricing \\ \hline
+\textbf{Actor(s)} & Shop Staff, Admin \\ \hline
+\textbf{Description} & Define or update the price-per-page for a (print type, paper size, sides) combination, and the price for a finishing option, at a specific shop. \\ \hline
+\textbf{Pre-conditions} & Shop Staff must be assigned to and active at the target shop; Admin may act on any shop. \\ \hline
+\textbf{Main Flow} & 1. Actor submits a pricing or finishing rule with an effective-from date.\newline 2. System validates there is no overlapping identical rule and saves it. \\ \hline
+\textbf{Alternate / Exception Flow} & A duplicate rule for the same combination and effective date is rejected. \\ \hline
+\textbf{Post-conditions} & Future orders at that shop are priced against the updated rule; past orders keep their original, snapshotted price. \\ \hline
+\textbf{Includes / Extends} & None. \\ \hline
+
+\textbf{Use Case ID / Name} & UC-11 / Manage Staff and Faculty Accounts \\ \hline
+\textbf{Actor(s)} & Admin \\ \hline
+\textbf{Description} & Admin creates Shop Staff accounts (optionally assigning a shop) and Faculty accounts, and can update a staff member's status or shop assignment. \\ \hline
+\textbf{Pre-conditions} & Admin is authenticated. \\ \hline
+\textbf{Main Flow} & 1. Admin submits the new account's details and role.\newline 2. System creates the account with the specified role and, for Shop Staff, an optional shop assignment. \\ \hline
+\textbf{Alternate / Exception Flow} & None -- Student is the only self-registerable role; Faculty and Shop Staff can only be created by an Admin. \\ \hline
+\textbf{Post-conditions} & The new account can log in with the assigned role. \\ \hline
+\textbf{Includes / Extends} & None. \\ \hline
+\caption{Use Case Templates for SmartPrint}
+\end{longtable}
+\end{center}
+
+\subsection{Use Case Scenarios}
+
+\textbf{Scenario 1 -- Standard Paid Order.} A Student uploads a document, places an order at a shop that is accepting orders, pays successfully, and the order is queued, printed, marked ready, and collected in sequence.
+
+\textbf{Scenario 2 -- Free Faculty Order.} A Faculty member places an order at the CSE faculty shop; the order total is zero, no payment step occurs, and the order is queued immediately.
+
+\textbf{Scenario 3 -- Cancellation and Refund.} A Student cancels a \texttt{QUEUED} order before it starts printing, then requests a refund of the successful payment already made; an Admin later processes that refund.
+
+\textbf{Scenario 4 -- Queue Processing.} A Shop Staff member starts the next waiting order at their shop (blocked if another order is already printing), marks it ready once printed, and later marks it collected.
+
+\section{Activity Diagram and Swimlane Diagrams}
+
+\subsection{Activity Diagram}
+The activity diagram below models the end-to-end order lifecycle: document upload, price resolution, order creation, the branch between a free faculty order and a paid order, payment confirmation, queue entry, and the parallel cancellation/refund path.
+
+\DiagramPlaceholder{6.5cm}{[SPACE FOR ACTIVITY DIAGRAM]}{Activity Diagram -- SmartPrint Order Lifecycle}
+
+\subsection{Swimlane Diagram}
+The swimlane diagram partitions the same order lifecycle across the Customer (Student/Faculty), SmartPrint System, and Shop Staff lanes, making explicit which activities are performed by the customer, which are automated backend decisions, and which are performed by shop staff at the printing counter.
+
+\DiagramPlaceholder{7cm}{[SPACE FOR SWIMLANE DIAGRAM]}{Swimlane Diagram -- Order Lifecycle by Actor}
+
+\section{Class Diagram}
+The class diagram captures the principal domain entities exactly as modelled in the system's database schema: \texttt{User} (with role Student/Faculty/Shop Staff/Admin), \texttt{Document}, \texttt{PrintShop}, \texttt{ShopPricingRule}, \texttt{ShopFinishingRule}, \texttt{Order}, \texttt{OrderDocument}, \texttt{Queue}, \texttt{Payment}, and \texttt{Refund}. A \texttt{PrintShop} owns its pricing and finishing rules and receives many orders; an \texttt{Order} is composed of one or more \texttt{OrderDocument} line items, optionally enters exactly one \texttt{Queue} entry, and may have one or more \texttt{Payment} attempts, each of which may be refunded.
+
+\DiagramPlaceholder{7cm}{[SPACE FOR CLASS DIAGRAM]}{Class Diagram -- SmartPrint Domain Model}
+
+\section{Data Flow Diagrams (DFDs)}
+
+\subsection{DFD Level 0}
+The context diagram treats SmartPrint as a single process exchanging data with three external entities: the \textbf{Customer} (Student/Faculty), \textbf{Shop Staff}, and the \textbf{Admin}. The Customer submits documents and order/payment details and receives order status and receipts; Shop Staff submit queue actions and receive the shop's worklist; the Admin submits management actions (shops, staff, pricing) and receives system-wide reports.
+
+\DiagramPlaceholder{6cm}{[SPACE FOR DFD LEVEL 0]}{DFD Level 0 -- Context Diagram of SmartPrint}
+
+\subsection{DFD Level 1}
+The Level 1 diagram decomposes the system into its principal processes -- \emph{Manage Documents}, \emph{Place Order \& Resolve Pricing}, \emph{Process Payment}, \emph{Manage Print Queue}, \emph{Manage Refunds}, and \emph{Administer Shops/Staff/Pricing} -- and introduces the data stores that back them: \textbf{D1 Users}, \textbf{D2 Documents}, \textbf{D3 Orders \& Order Documents}, \textbf{D4 Shops \& Pricing Rules}, \textbf{D5 Queue}, and \textbf{D6 Payments \& Refunds}. Placing an order reads from D2 and D4 and writes D3; a successful payment writes D6 and D5 in the same transaction.
+
+\DiagramPlaceholder{7cm}{[SPACE FOR DFD LEVEL 1]}{DFD Level 1 -- Process Decomposition of SmartPrint}
+
+\subsection{DFD Level 2}
+The Level 2 diagram further decomposes the \emph{Place Order \& Resolve Pricing} process from Level 1 into its constituent steps: (2.1) validate shop eligibility and accepting-orders status, (2.2) resolve the active pricing rule per item, (2.3) resolve the active finishing rule per item, (2.4) compute each line total and the order total (zeroed for a free faculty order), and (2.5) persist the order and its line items to D3.
+
+\DiagramPlaceholder{7cm}{[SPACE FOR DFD LEVEL 2]}{DFD Level 2 -- Decomposition of the Place Order Process}
+
+\section{Software Requirement Specification in IEEE Format}
+
+\subsection{Introduction}
+
+\subsubsection*{Purpose}
+This Software Requirements Specification describes the functional and non-functional requirements of SmartPrint, a college printing-management system, as actually implemented at the time of the mid-semester evaluation.
+
+\subsubsection*{Scope}
+SmartPrint allows Students and Faculty to upload documents and place print orders against a chosen shop, pay for those orders, track and cancel them, and request refunds; it allows Shop Staff to operate their shop's print queue and pricing; and it allows an Admin to manage shops, staff/faculty accounts, and pricing, and to view all orders. The system excludes real payment-gateway integration (a mock provider is used), priority-based queue scheduling, and any reprint workflow -- none of these exist in the current codebase.
+
+\subsubsection*{Definitions, Acronyms and Abbreviations}
+\textbf{FIFO} -- First-In-First-Out. \textbf{JWT} -- JSON Web Token. \textbf{ORM} -- Object-Relational Mapper. \textbf{CSE\_FACULTY shop} -- the departmental print shop at which Faculty printing is free.
+
+\subsubsection*{Intended Audience}
+The development team, the course faculty evaluating this submission, and future maintainers of the SmartPrint codebase.
+
+\subsubsection*{References}
+IEEE Std 830-1998, Recommended Practice for Software Requirements Specifications; the SmartPrint source repository (Prisma schema, Express route/controller/service layers, React frontend).
+
+\subsection{Overall Description}
+
+\subsubsection*{Product Perspective}
+SmartPrint is a new, self-contained two-tier web application: a React/TypeScript frontend consuming a REST API served by a Node.js/Express/TypeScript backend, backed by a PostgreSQL database.
+
+\subsubsection*{Product Functions}
+Document upload and management; shop and pricing browsing; order placement with server-resolved pricing; payment initiation and confirmation; FIFO queue processing; order tracking, cancellation, and refunds; and administrative management of shops, staff, faculty accounts, and pricing.
+
+\subsubsection*{User Classes and Characteristics}
+\textbf{Student} -- self-registers, uploads documents, pays for print orders. \textbf{Faculty} -- provisioned by Admin, prints for free at the CSE department shop, pays at other shops like a student. \textbf{Shop Staff} -- provisioned by Admin, assigned to exactly one shop, operates that shop's queue and pricing. \textbf{Admin} -- manages shops, staff, faculty accounts, pricing, and has visibility over all orders.
+
+\subsubsection*{Operating Environment}
+The backend runs as a Node.js service against a PostgreSQL database managed through Prisma migrations; the frontend is a static single-page application built with Vite and served independently. Dockerfiles are provided for both services.
+
+\subsubsection*{Design and Implementation Constraints}
+All prices are resolved server-side from a shop's currently effective pricing/finishing rules; a client-supplied price is never trusted. An order can enter a shop's queue only after a successful payment, except for the CSE Faculty free-printing entitlement. Only one order may be actively printing per shop at any time.
+
+\subsubsection*{Assumptions and Dependencies}
+The payment provider used in the current build is a mock/simulated provider intended for development and testing; production use would require substituting a real gateway behind the same interface.
+
+\subsection{Specific Requirements}
+
+\subsubsection*{Functional Requirements}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|p{1.4cm}|p{11.9cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} \\ \hline
+FR-01 & A prospective Student shall be able to self-register; the Faculty and Shop Staff roles shall only be created by an Admin. \\ \hline
+FR-02 & The system shall authenticate a user and issue a JWT recording the user's id and role. \\ \hline
+FR-03 & The system shall allow a user to request and complete a password reset via a one-time, hashed, time-limited token. \\ \hline
+FR-04 & The system shall allow a Student or Faculty user to upload a document, validating its type and size before storage. \\ \hline
+FR-05 & The system shall allow a Student or Faculty user to place a print order against a shop that is currently accepting orders and for which their role is eligible, with the price resolved solely from server-side pricing/finishing rules. \\ \hline
+FR-06 & For a Faculty order placed at the designated CSE faculty shop, the system shall zero the order total and enqueue it without requiring payment. \\ \hline
+FR-07 & For every other order, the system shall require a successful payment before the order is inserted into its shop's print queue. \\ \hline
+FR-08 & The system shall atomically move a successfully paid order to \texttt{PAYMENT\_CONFIRMED} and insert it into its shop's FIFO queue as \texttt{QUEUED}, in the same transaction as the payment confirmation. \\ \hline
+FR-09 & The system shall allow a user to view their order's current status and full status history. \\ \hline
+FR-10 & The system shall allow a user to cancel their own order while it is \texttt{PLACED}, \texttt{PAYMENT\_CONFIRMED}, or \texttt{QUEUED}, and shall remove any associated queue entry on cancellation. \\ \hline
+FR-11 & The system shall allow a user to request a full refund for a cancelled order that had a successful payment. \\ \hline
+FR-12 & The system shall allow an Admin to process (settle) a requested refund. \\ \hline
+FR-13 & The system shall allow Shop Staff (or Admin) to start the next FIFO-waiting order for their shop, permitting at most one \texttt{PRINTING} order per shop at a time. \\ \hline
+FR-14 & The system shall allow Shop Staff (or Admin) to mark a printing order complete (\texttt{READY}) and to mark a ready order collected (\texttt{COLLECTED}). \\ \hline
+FR-15 & The system shall allow Shop Staff (or Admin, for any shop) to create and update pricing rules and finishing rules for a shop, each with an effective-date window. \\ \hline
+FR-16 & The system shall allow an Admin to create shops, and to update any shop; Shop Staff may update only their own assigned shop's accepting-orders flag. \\ \hline
+FR-17 & The system shall allow an Admin to create and manage Shop Staff and Faculty accounts, including assigning a Shop Staff member to a shop. \\ \hline
+FR-18 & The system shall allow an Admin to view all orders across every shop. \\ \hline
+\caption{Functional Requirements of SmartPrint}
+\end{longtable}
+\end{center}
+
+\subsubsection*{Non-Functional Requirements}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|p{1.6cm}|p{11.7cm}|}
+\hline
+\textbf{ID} & \textbf{Requirement} \\ \hline
+NFR-01 & \textbf{Security:} Passwords shall be stored only as bcrypt hashes, never in plain text; every protected endpoint shall require a valid JWT and shall enforce role-based authorization. \\ \hline
+NFR-02 & \textbf{Security:} A Shop Staff member's access to shop-scoped data (queue, pricing) shall be restricted to their own assigned, active shop, verified against the database rather than trusted from a URL parameter. \\ \hline
+NFR-03 & \textbf{Data Integrity:} Concurrent operations on the same order or queue entry (e.g., two simultaneous payment confirmations, or two staff starting the same queue) shall be serialized so no order or payment can be driven into an inconsistent state. \\ \hline
+NFR-04 & \textbf{Reliability:} Placing an order and updating its price shall never happen concurrently in a way that changes a placed order's already-priced line items; prices are snapshotted at order-creation time. \\ \hline
+NFR-05 & \textbf{Usability:} Every state-changing action (cancel, refund request, queue action) shall present the user with a clear reason when it is not permitted (e.g., an order that can no longer be cancelled). \\ \hline
+NFR-06 & \textbf{Maintainability:} Business rules (pricing resolution, queue admission, refund eligibility) shall live in a dedicated service layer, separate from HTTP route handling, to keep them independently testable. \\ \hline
+NFR-07 & \textbf{Portability:} Both frontend and backend shall be containerizable via the project's Dockerfiles, independent of any specific hosting provider. \\ \hline
+\caption{Non-Functional Requirements of SmartPrint}
+\end{longtable}
+\end{center}
+
+\section{User Stories and Story Cards}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{|p{1.6cm}|p{11.7cm}|}
+\hline
+\textbf{US-01} & \textbf{Role: Student} \\
+\multicolumn{2}{|p{13.3cm}|}{As a Student, I want to upload my document and place a print order at a shop of my choice, so that I do not have to carry a USB drive to the shop. \newline \textbf{Acceptance Criteria:} Given a valid document and an eligible, order-accepting shop, the order is created with a server-computed total. \newline \textbf{Priority:} High \quad \textbf{Estimate:} 8 story points} \\ \hline
+
+\textbf{US-02} & \textbf{Role: Student} \\
+\multicolumn{2}{|p{13.3cm}|}{As a Student, I want to pay for my print order online, so that I don't need cash at the counter and my order only prints once it is paid. \newline \textbf{Acceptance Criteria:} A successful payment moves the order to \texttt{PAYMENT\_CONFIRMED} and queues it; a failed payment leaves the order payable for retry. \newline \textbf{Priority:} High \quad \textbf{Estimate:} 5 story points} \\ \hline
+
+\textbf{US-03} & \textbf{Role: Student} \\
+\multicolumn{2}{|p{13.3cm}|}{As a Student, I want to cancel my order before it starts printing, so that I am not charged for a job I no longer need. \newline \textbf{Acceptance Criteria:} An order in \texttt{PLACED}, \texttt{PAYMENT\_CONFIRMED}, or \texttt{QUEUED} can be cancelled; a \texttt{PRINTING} order cannot. \newline \textbf{Priority:} High \quad \textbf{Estimate:} 3 story points} \\ \hline
+
+\textbf{US-04} & \textbf{Role: Student} \\
+\multicolumn{2}{|p{13.3cm}|}{As a Student, I want to request a refund after cancelling a paid order, so that I get my money back without visiting the shop. \newline \textbf{Acceptance Criteria:} A refund request can only be created for a cancelled order with a successful payment, and is for the full paid amount. \newline \textbf{Priority:} Medium \quad \textbf{Estimate:} 3 story points} \\ \hline
+
+\textbf{US-05} & \textbf{Role: Faculty} \\
+\multicolumn{2}{|p{13.3cm}|}{As a Faculty member, I want my print order at the CSE department printer to be free, so that I am not charged for my institutional printing entitlement. \newline \textbf{Acceptance Criteria:} An order placed by a Faculty user at the CSE faculty shop is created with a total of zero and is queued without a payment step. \newline \textbf{Priority:} High \quad \textbf{Estimate:} 5 story points} \\ \hline
+
+\textbf{US-06} & \textbf{Role: Shop Staff} \\
+\multicolumn{2}{|p{13.3cm}|}{As a Shop Staff member, I want to see and start the next waiting order in my shop's queue, so that I always know exactly which document to print next. \newline \textbf{Acceptance Criteria:} Starting the next order fails if another order at that shop is already printing, or if the queue is empty. \newline \textbf{Priority:} High \quad \textbf{Estimate:} 5 story points} \\ \hline
+
+\textbf{US-07} & \textbf{Role: Shop Staff} \\
+\multicolumn{2}{|p{13.3cm}|}{As a Shop Staff member, I want to set my shop's per-page pricing and finishing prices, so that orders are charged correctly without me pricing each one manually. \newline \textbf{Acceptance Criteria:} A new pricing/finishing rule takes effect only from its stated effective date and does not alter already-placed orders' snapshotted prices. \newline \textbf{Priority:} Medium \quad \textbf{Estimate:} 5 story points} \\ \hline
+
+\textbf{US-08} & \textbf{Role: Admin} \\
+\multicolumn{2}{|p{13.3cm}|}{As an Admin, I want to create Shop Staff and Faculty accounts and assign staff to a shop, so that each shop can be operated by the right people. \newline \textbf{Acceptance Criteria:} Only an Admin can create these roles; a Shop Staff account can be assigned to at most one shop. \newline \textbf{Priority:} High \quad \textbf{Estimate:} 5 story points} \\ \hline
+
+\textbf{US-09} & \textbf{Role: Admin} \\
+\multicolumn{2}{|p{13.3cm}|}{As an Admin, I want to see every order across every shop, so that I can oversee system-wide printing activity. \newline \textbf{Acceptance Criteria:} The Admin order view returns orders regardless of which shop or customer they belong to. \newline \textbf{Priority:} Medium \quad \textbf{Estimate:} 3 story points} \\ \hline
+
+\textbf{US-10} & \textbf{Role: Admin} \\
+\multicolumn{2}{|p{13.3cm}|}{As an Admin, I want to process a Student's refund request, so that a cancelled, paid order is properly settled. \newline \textbf{Acceptance Criteria:} Processing a refund request marks it \texttt{PROCESSED} on success or \texttt{FAILED} on a provider error, without silently losing the request. \newline \textbf{Priority:} Medium \quad \textbf{Estimate:} 3 story points} \\ \hline
+\caption{User Stories for SmartPrint}
+\end{longtable}
+\end{center}
+
+% =================================================================
+% CHAPTER 3: FEASIBILITY REPORT
+% =================================================================
+\chapter{Feasibility Report}
+
+\section{Technical Feasibility}
+SmartPrint is built entirely on mature, freely available, well-documented technologies: React with TypeScript on the frontend, Node.js/Express with TypeScript on the backend, PostgreSQL managed through the Prisma ORM, JSON Web Tokens for authentication, and bcrypt for password hashing. None of these require specialised hardware, proprietary licensing, or research-level effort to use correctly. The team already has working knowledge of JavaScript/TypeScript and REST API design from prior coursework, and the remaining pieces (Prisma migrations, JWT-based auth, role-based middleware) are standard, well-documented patterns rather than novel engineering. The codebase already demonstrates the harder integration points working end-to-end -- transactional payment-to-queue insertion, per-shop staff access checks re-derived from the database rather than trusted client input, and price snapshotting at order time -- which substantially de-risks the remaining feature work for this evaluation period. The system is technically feasible to build, test, and demonstrate within the semester timeline.
+
+\section{Economic Feasibility}
+Every component in the stack -- Node.js, PostgreSQL, React, Prisma -- is open-source and free to use for development and academic deployment. The payment layer currently uses a mock/simulated provider, avoiding any transaction-fee cost during development; a production deployment would incur only the standard, low per-transaction fee of whichever real payment gateway is eventually integrated behind the existing payment interface. Hosting costs for a single-institution deployment (one small database instance and one small application server) are modest and fall well within typical academic or small-institutional budgets. No specialised or expensive infrastructure is required.
+
+\section{Operational Feasibility}
+The workflow SmartPrint automates -- upload, price, pay, queue, print, collect -- maps directly onto the physical counter workflow shop staff already perform, so the learning curve for Shop Staff is limited to using a queue dashboard instead of a mental or paper list. Students and Faculty already use web and mobile applications daily, so the ordering flow requires no special training. Role-based access (Student/Faculty self-service, Shop Staff shop-scoped operations, Admin system-wide oversight) matches the real organisational structure of a college with multiple independently staffed print shops, so adoption does not require restructuring how the shops are run. The existing backend integration test suite (thirteen test files covering authentication, documents, orders, payments, pricing, queue, and refunds) and frontend unit test suite give reasonable confidence that core workflows behave correctly before a real deployment.
+
+\section{Schedule Feasibility}
+The core domain -- authentication, document upload, shop/pricing management, order placement with server-side pricing, payment simulation, FIFO queueing, and refund handling -- is already implemented and covered by tests, as verified directly against the repository for this report. The remaining work toward a full submission is incremental: replacing the mock payment provider with a real gateway, and polishing the administrative reporting views. Given that the foundational, highest-risk pieces (transactional order/payment/queue consistency, role-scoped shop access) are already working, the project is on schedule to be completed and demonstrated within the remaining weeks of the semester.
+
+% =================================================================
+% REFERENCES
+% =================================================================
+\begin{thebibliography}{9}
+
+\bibitem{ieee830}
+IEEE Std 830-1998, \emph{IEEE Recommended Practice for Software Requirements Specifications}, Institute of Electrical and Electronics Engineers, 1998.
+
+\bibitem{sommerville}
+I. Sommerville, \emph{Software Engineering}, 10th ed., Pearson, 2015.
+
+\bibitem{fowler-uml}
+M. Fowler, \emph{UML Distilled: A Brief Guide to the Standard Object Modeling Language}, 3rd ed., Addison-Wesley, 2003.
+
+\bibitem{prisma-docs}
+Prisma Data, Inc., \emph{Prisma ORM Documentation}, \url{https://www.prisma.io/docs}.
+
+\bibitem{express-docs}
+OpenJS Foundation, \emph{Express.js Documentation}, \url{https://expressjs.com/}.
+
+\bibitem{react-docs}
+Meta Platforms, Inc., \emph{React Documentation}, \url{https://react.dev/}.
+
+\bibitem{jwt-rfc}
+M. Jones, J. Bradley, and N. Sakimura, \emph{RFC 7519: JSON Web Token (JWT)}, IETF, 2015.
+
+\end{thebibliography}
+
+\end{document}
